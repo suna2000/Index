@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>书签栏（直属书签） · 书签</title>
+<style>
+:root { --line:#e5e7eb; --muted:#6b7280; --bg:#f6f7f9; }
+* { box-sizing:border-box; }
+body { font-family:"Segoe UI","Microsoft YaHei",sans-serif; margin:0; background:var(--bg); color:#111827; }
+header { position:sticky; top:0; background:rgba(255,255,255,.92); backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line); padding:14px 22px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+header h1 { font-size:19px; margin:0; }
+header .path { color:var(--muted); font-size:13px; }
+header .stat { color:var(--muted); font-size:13px; background:#eef1f5; border-radius:99px; padding:3px 11px; }
+#q { margin-left:auto; padding:7px 13px; border:1px solid var(--line); border-radius:9px;
+  font-size:14px; width:220px; outline:none; background:#fff; }
+#q:focus { border-color:#4F6BED; }
+main { max-width:900px; margin:22px auto 60px; padding:0 18px; }
+.fold { background:#fff; border:1px solid var(--line); border-radius:12px; margin:12px 0; overflow:hidden; }
+.fold>summary { cursor:pointer; padding:11px 16px; font-weight:600; font-size:15px; list-style:none;
+  display:flex; align-items:center; gap:9px; user-select:none; }
+.fold>summary::-webkit-details-marker { display:none; }
+.fold>summary:hover { background:#f3f4f6; }
+.fold>summary::after { content:"▸"; margin-left:auto; color:var(--muted); transition:.15s; }
+.fold[open]>summary::after { transform:rotate(90deg); }
+.folder-ico { filter:saturate(.9); }
+.cnt { font-size:12px; color:var(--muted); background:#eef1f5; border-radius:99px; padding:1px 9px; font-weight:500; }
+.inner { padding:2px 12px 12px; border-top:1px dashed var(--line); }
+ul.links { list-style:none; margin:10px 0 4px; padding:0; display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:8px; }
+ul.links a { display:flex; align-items:center; gap:10px; padding:8px 11px; border-radius:9px;
+  text-decoration:none; color:inherit; border:1px solid transparent; }
+ul.links a:hover { background:#f3f6ff; border-color:#dbe4ff; }
+.av { flex:0 0 30px; width:30px; height:30px; border-radius:8px; color:#fff; font-weight:700;
+  display:flex; align-items:center; justify-content:center; font-size:15px; }
+.txt { min-width:0; display:flex; flex-direction:column; }
+.txt b { font-size:14px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.txt i { font-style:normal; color:var(--muted); font-size:11.5px; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; }
+.hidden { display:none !important; }
+.empty { color:var(--muted); text-align:center; padding:40px 0; }
+</style></head><body>
+<header><h1>书签栏（直属书签）</h1><span class="path">书签栏</span>
+<span class="stat">34 个书签</span>
+<input id="q" type="search" placeholder="搜索书签…" oninput="f(this.value)"></header>
+<main>
+<ul class="links"><li><a href="https://hwork.haier.net/portal/web-workbench/index" target="_blank" rel="noopener"><span class="av" style="background:#0B7285">H</span><span class="txt"><b>hwork.haier.net</b><i>hwork.haier.net</i></span></a></li><li><a href="https://www.bixiny.com/#/dashboard" target="_blank" rel="noopener"><span class="av" style="background:#E64980">B</span><span class="txt"><b>bixiny.com</b><i>bixiny.com</i></span></a></li><li><a href="https://ikuuu.win/user" target="_blank" rel="noopener"><span class="av" style="background:#364FC7">I</span><span class="txt"><b>ikuuu.win</b><i>ikuuu.win</i></span></a></li><li><a href="https://share.lanol.cn/#/send" target="_blank" rel="noopener"><span class="av" style="background:#E8590C">S</span><span class="txt"><b>share.lanol.cn</b><i>share.lanol.cn</i></span></a></li><li><a href="https://www.coolutils.com/zh/online/PRN-to-PDF" target="_blank" rel="noopener"><span class="av" style="background:#F08C00">C</span><span class="txt"><b>coolutils.com</b><i>coolutils.com</i></span></a></li><li><a href="https://snapany.com/zh/bilibili" target="_blank" rel="noopener"><span class="av" style="background:#0CA678">S</span><span class="txt"><b>snapany.com</b><i>snapany.com</i></span></a></li><li><a href="https://www.daodejing.org/" target="_blank" rel="noopener"><span class="av" style="background:#0CA678">D</span><span class="txt"><b>daodejing.org</b><i>daodejing.org</i></span></a></li><li><a href="https://www.dutongjian.com/" target="_blank" rel="noopener"><span class="av" style="background:#4F6BED">D</span><span class="txt"><b>dutongjian.com</b><i>dutongjian.com</i></span></a></li><li><a href="https://maihao1688.com/?cid=307" target="_blank" rel="noopener"><span class="av" style="background:#BE4BDB">M</span><span class="txt"><b>maihao1688.com</b><i>maihao1688.com</i></span></a></li><li><a href="https://x.com/home" target="_blank" rel="noopener"><span class="av" style="background:#F08C00">X</span><span class="txt"><b>x.com</b><i>x.com</i></span></a></li><li><a href="https://www.youtube.com/?themeRefresh=1" target="_blank" rel="noopener"><span class="av" style="background:#2B8A3E">Y</span><span class="txt"><b>youtube.com</b><i>youtube.com</i></span></a></li><li><a href="https://github.com/topics/awesome" target="_blank" rel="noopener"><span class="av" style="background:#BE4BDB">G</span><span class="txt"><b>github.com</b><i>github.com</i></span></a></li><li><a href="https://chat.deepseek.com/" target="_blank" rel="noopener"><span class="av" style="background:#4F6BED">C</span><span class="txt"><b>chat.deepseek.com</b><i>chat.deepseek.com</i></span></a></li><li><a href="https://www.reddit.com/" target="_blank" rel="noopener"><span class="av" style="background:#5F3DC4">R</span><span class="txt"><b>reddit.com</b><i>reddit.com</i></span></a></li><li><a href="https://www.runningcheese.com/" target="_blank" rel="noopener"><span class="av" style="background:#4F6BED">R</span><span class="txt"><b>runningcheese.com</b><i>runningcheese.com</i></span></a></li><li><a href="https://wallhaven.cc/" target="_blank" rel="noopener"><span class="av" style="background:#2B8A3E">W</span><span class="txt"><b>wallhaven.cc</b><i>wallhaven.cc</i></span></a></li><li><a href="https://www.bilibili.com/" target="_blank" rel="noopener"><span class="av" style="background:#C92A2A">B</span><span class="txt"><b>bilibili.com</b><i>bilibili.com</i></span></a></li><li><a href="https://www.google.com/" target="_blank" rel="noopener"><span class="av" style="background:#C92A2A">G</span><span class="txt"><b>google.com</b><i>google.com</i></span></a></li><li><a href="https://www.cnblogs.com/ghhsdu" target="_blank" rel="noopener"><span class="av" style="background:#087F5B">C</span><span class="txt"><b>cnblogs.com</b><i>cnblogs.com</i></span></a></li><li><a href="https://www.chongbuluo.com/" target="_blank" rel="noopener"><span class="av" style="background:#BE4BDB">C</span><span class="txt"><b>chongbuluo.com</b><i>chongbuluo.com</i></span></a></li><li><a href="http://ghh3858.ysepan.com/" target="_blank" rel="noopener"><span class="av" style="background:#E64980">G</span><span class="txt"><b>ghh3858.ysepan.com</b><i>ghh3858.ysepan.com</i></span></a></li><li><a href="https://forum-zh.obsidian.md/" target="_blank" rel="noopener"><span class="av" style="background:#E8590C">F</span><span class="txt"><b>forum-zh.obsidian.md</b><i>forum-zh.obsidian.md</i></span></a></li><li><a href="https://inftab.com/" target="_blank" rel="noopener"><span class="av" style="background:#BE4BDB">I</span><span class="txt"><b>inftab.com</b><i>inftab.com</i></span></a></li><li><a href="https://wantwords.net/" target="_blank" rel="noopener"><span class="av" style="background:#7048E8">W</span><span class="txt"><b>wantwords.net</b><i>wantwords.net</i></span></a></li><li><a href="https://365.kdocs.cn/latest" target="_blank" rel="noopener"><span class="av" style="background:#E8590C">3</span><span class="txt"><b>365.kdocs.cn</b><i>365.kdocs.cn</i></span></a></li><li><a href="https://openalex.org/" target="_blank" rel="noopener"><span class="av" style="background:#E64980">O</span><span class="txt"><b>openalex.org</b><i>openalex.org</i></span></a></li><li><a href="https://www.miiteec.org.cn/home" target="_blank" rel="noopener"><span class="av" style="background:#4F6BED">M</span><span class="txt"><b>miiteec.org.cn</b><i>miiteec.org.cn</i></span></a></li><li><a href="https://hcn0vcy8gaj6.feishu.cn/docx/ZswJdqoASob88nxQQQqcVK6PnCe" target="_blank" rel="noopener"><span class="av" style="background:#F08C00">H</span><span class="txt"><b>hcn0vcy8gaj6.feishu.cn</b><i>hcn0vcy8gaj6.feishu.cn</i></span></a></li><li><a href="https://zenn.dev/" target="_blank" rel="noopener"><span class="av" style="background:#364FC7">Z</span><span class="txt"><b>zenn.dev</b><i>zenn.dev</i></span></a></li><li><a href="https://emoji8.com/zh-hans/" target="_blank" rel="noopener"><span class="av" style="background:#D6336C">E</span><span class="txt"><b>emoji8.com</b><i>emoji8.com</i></span></a></li><li><a href="https://www.mcpworld.com/" target="_blank" rel="noopener"><span class="av" style="background:#1C7ED6">M</span><span class="txt"><b>mcpworld.com</b><i>mcpworld.com</i></span></a></li><li><a href="https://www.submission.directory/?type=Profile" target="_blank" rel="noopener"><span class="av" style="background:#C92A2A">S</span><span class="txt"><b>submission.directory</b><i>submission.directory</i></span></a></li><li><a href="https://jcc.qq.com/ingame/#/view-lineup-mode13s14" target="_blank" rel="noopener"><span class="av" style="background:#5F3DC4">J</span><span class="txt"><b>jcc.qq.com</b><i>jcc.qq.com</i></span></a></li><li><a href="https://ihaier.feishu.cn/wiki/YJOowFsEJizPQSkpfnKcJihYnpc" target="_blank" rel="noopener"><span class="av" style="background:#5F3DC4">I</span><span class="txt"><b>ihaier.feishu.cn</b><i>ihaier.feishu.cn</i></span></a></li></ul>
+</main>
+<script>
+function f(kw){
+  kw=kw.trim().toLowerCase();
+  document.querySelectorAll('ul.links li').forEach(li=>{
+    li.classList.toggle('hidden', kw && !li.textContent.toLowerCase().includes(kw));
+  });
+  document.querySelectorAll('details.fold').forEach(d=>{
+    if(kw) d.open=true;
+    const any=d.querySelectorAll('ul.links li:not(.hidden)').length
+      || Array.from(d.querySelectorAll('details.fold')).some(x=>!x.querySelector('ul.links li.hidden'));
+  });
+}
+</script>
+</body></html>

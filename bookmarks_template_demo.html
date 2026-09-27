@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>书签导航（示例模板）</title>
+<style>
+  :root { --brand:#3b6fb5; --brand-dark:#2b5f9e; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Segoe UI","Microsoft YaHei",sans-serif;
+         background:#f5f6f8; color:#1f2328; }
+  header { background:linear-gradient(135deg,#2b5f9e,#4a86c8); color:#fff;
+           padding:22px 28px 18px; }
+  header h1 { margin:0 0 6px; font-size:22px; letter-spacing:.5px; }
+  header p#subtitle { margin:0; opacity:.92; }
+  header p#subtitle:hover { text-decoration:underline dotted; cursor:text; }
+  header p#subtitle[contenteditable="true"] { outline:2px solid rgba(255,255,255,.85); outline-offset:3px;
+    border-radius:4px; padding:0 6px; opacity:1; background:rgba(255,255,255,.12); cursor:text; }
+  header p { margin:0; font-size:13px; opacity:.85; }
+  .bar { position:sticky; top:0; z-index:10; background:#fff;
+         border-bottom:1px solid #e3e6ea;
+         padding:10px 28px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .bar input { flex:1 1 240px; max-width:360px; padding:7px 12px; font-size:13px;
+               border:1px solid #d4d9e0; border-radius:8px; outline:none; }
+  .bar input:focus { border-color:var(--brand); }
+  .bar a { font-size:12.5px; color:#345; text-decoration:none; white-space:nowrap;
+           background:#eef1f5; border-radius:999px; padding:5px 11px; }
+  .bar a:hover { background:#dfe7f2; color:var(--brand-dark); }
+  main { max-width:1700px; margin:0 auto; padding:18px 28px 70px; }
+  /* content-visibility: 屏幕外的分区跳过渲染，大幅降低布局/绘制开销 */
+  section { margin:0 0 34px; content-visibility:auto; contain-intrinsic-size:auto 1200px; }
+  section > h2 { font-size:17px; margin:0 0 12px; color:var(--brand-dark);
+                 border-left:4px solid var(--brand); padding-left:10px; }
+  .cols { column-width:235px; column-gap:20px; }
+  .card { break-inside:avoid; background:#fff; border:1px solid #e3e6ea;
+          border-radius:10px; padding:10px 12px; margin:0 0 20px;
+          box-shadow:0 1px 2px rgba(20,40,80,.05); }
+  .card > h3 { font-size:13.5px; margin:0 0 8px; color:var(--brand-dark);
+               display:flex; align-items:center; gap:6px; }
+  .card > h3::before { content:"📁"; font-size:12px; }
+  .card .card > h3 { font-size:12.5px; color:#55606e; }
+  ul.links { list-style:none; margin:0; padding:0; }
+  ul.links li { margin:1px 0; }
+  a.link { display:flex; align-items:center; gap:7px; font-size:13px;
+           color:#1f2328; text-decoration:none; padding:3px 5px; border-radius:6px;
+           line-height:1.35; }
+  a.link:hover { background:#eef4fb; color:var(--brand-dark); }
+  a.link .txt { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  img.fav { width:16px; height:16px; flex:none; border-radius:3px; }
+  span.fav-fb { width:16px; height:16px; flex:none; display:inline-flex;
+                align-items:center; justify-content:center; font-size:12px;
+                line-height:1; opacity:.75; }
+  .empty-tip { color:#98a2ae; font-size:13px; padding:40px 0; text-align:center; display:none; }
+  /* --- 编辑功能 --- */
+  .bar button { font-size:12.5px; padding:6px 12px; border-radius:8px;
+                border:1px solid #d4d9e0; background:#fff; cursor:pointer; white-space:nowrap; }
+  .bar button:hover { border-color:var(--brand); color:var(--brand-dark); }
+  .bar-ops { display:flex; gap:6px; }
+  #saveBtn { border-color:var(--brand); color:var(--brand-dark); font-weight:600; }
+  #saveBtn:hover { background:#eef4fb; }
+  ul.links li { display:flex; align-items:flex-start; margin:1px 0; }
+  a.link { flex:1; min-width:0; }
+  li .ops { display:inline-flex; opacity:0; pointer-events:none; gap:1px;
+            margin-left:4px; flex:none; padding-top:3px; }
+  /* 用 opacity 而非 display 切换，避免悬停时触发多列容器整体重排 */
+  li:hover .ops { opacity:1; pointer-events:auto; }
+  button.op { border:0; background:transparent; cursor:pointer; font-size:11px;
+              line-height:1; color:#9aa3af; padding:3px 4px; border-radius:4px; }
+  button.op.edit:hover { color:var(--brand-dark); background:#eef4fb; }
+  button.op.del:hover { color:#d9534f; background:#fdecea; }
+  .card > h3 .ops { display:inline-flex; margin-left:auto; gap:1px; }
+  .card > h3 .op { font-size:12px; color:#b9c2cc; }
+  .card > h3 .op:hover { color:var(--brand-dark); background:#eef4fb; }
+  .card > h3 .op.delcard:hover { color:#d9534f; background:#fdecea; }
+  .mask { display:none; position:fixed; inset:0; z-index:100;
+          background:rgba(30,40,60,.42); align-items:center; justify-content:center; }
+  .mask.show { display:flex; }
+  .modal { background:#fff; border-radius:12px; padding:20px 22px;
+           width:min(440px,92vw); box-shadow:0 10px 40px rgba(0,0,0,.22); }
+  .modal h3 { margin:0 0 6px; font-size:15px; color:var(--brand-dark); }
+  .modal label { display:block; font-size:12.5px; color:#55606e; margin:12px 0 4px; }
+  .modal .lbl-row { display:flex; align-items:center; justify-content:space-between; }
+  .modal .fetch-title { padding:3px 10px; font-size:12px; border:1px solid #d7dde5;
+    background:#fff; border-radius:6px; cursor:pointer; color:var(--brand-dark); }
+  .modal .fetch-title:hover { background:#eef4fb; border-color:var(--brand); }
+  .modal .fetch-title:disabled { opacity:.55; cursor:default; }
+  .modal input, .modal select { width:100%; padding:8px 10px; font-size:13px;
+                                border:1px solid #d4d9e0; border-radius:8px; outline:none; }
+  .modal input:focus, .modal select:focus { border-color:var(--brand); }
+  .m-btns { margin-top:18px; display:flex; justify-content:flex-end; gap:8px; }
+  .m-btns button { padding:7px 16px; border-radius:8px; border:1px solid #d4d9e0;
+                   background:#fff; cursor:pointer; font-size:13px; }
+  .m-btns button.primary { background:var(--brand); border-color:var(--brand); color:#fff; }
+  .m-btns button.primary:hover { background:var(--brand-dark); }
+  body[data-frozen] .ops, body[data-frozen] .bar-ops { display:none; }
+  /* --- 拖拽 --- */
+  li[draggable="true"] a.link { cursor:default; }
+  li.dragging { opacity:.35; }
+  .card.drop-hover { outline:2px dashed var(--brand); outline-offset:2px; background:#f0f6fd; }
+  .card.drop-line-top { box-shadow:0 -3px 0 0 var(--brand); }
+  .card.drop-line-bottom { box-shadow:0 3px 0 0 var(--brand); }
+  li.drop-line-top { box-shadow:0 -2px 0 0 var(--brand); border-radius:3px; }
+  li.drop-line-bottom { box-shadow:0 2px 0 0 var(--brand); border-radius:3px; }
+  .card.dragging-card { opacity:.4; }
+  .card[draggable="true"] > h3 { cursor:default; }
+  .cols.drop-hover { outline:2px dashed var(--brand); outline-offset:4px; border-radius:10px;
+                     background:rgba(59,111,181,.05); }
+  @media print { .bar { display:none; } section { content-visibility:visible; } }
+</style>
+<script>function favErr(el){var s=document.createElement("span");s.className="fav-fb";s.textContent="🪶";el.replaceWith(s);}</script>
+</head>
+<body data-sample="1">
+<header>
+  <h1>📚 书签导航</h1>
+  <p id="subtitle" title="点击编辑副标题">示例模板：1 个文件夹 · 10 个网站 · 功能与正式版完全一致，可直接修改</p>
+</header>
+<div class="bar">
+  <input id="q" type="search" placeholder="🔍 输入关键词过滤链接…" autocomplete="off">
+  <nav id="nav">
+<a href="#sec-0">我的书签</a></nav>
+<span class="bar-ops"><button id="saveBtn" title="把当前修改写回 HTML 文件本身（可反复保存）">💾 保存</button><button id="addBtn" title="添加一个新链接">➕ 添加</button><button id="addFolderBtn" title="新建一个文件夹（分类卡片）">📁 新文件夹</button><button id="newSecBtn" title="添加一个新分区">📑 新分区</button><button id="importBtn" title="导入浏览器导出的书签 HTML 文件（生成为一个新分区）">📥 导入</button><button id="exportBtn" title="导出一个只读副本（冻结当前状态）">⬇ 导出</button><button id="resetBtn" title="清除所有增删改记录">↺ 重置</button></span>
+<input type="file" id="importFile" accept=".html,.htm,text/html" hidden>
+</div>
+<main>
+<section id="sec-0"><h2>我的书签</h2><div class="cols"><div class="card" data-cid="C1" data-path="我的书签 / 常用网站"><h3><span>常用网站</span><span class="ops card-ops"><button class="op add" data-add="C1" title="向此分类添加链接">＋</button><button class="op addfolder" data-addfolder="C1" title="在此文件夹内新建子文件夹">📁</button><button class="op delcard" data-delcard="C1" title="删除此文件夹（含全部内容）">🗑</button></span></h3><ul class="links"><li data-id="L2"><a class="link" href="https://www.baidu.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.baidu.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">百度</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L3"><a class="link" href="https://www.zhihu.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.zhihu.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">知乎</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L4"><a class="link" href="https://www.bilibili.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.bilibili.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">哔哩哔哩</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L5"><a class="link" href="https://www.taobao.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.taobao.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">淘宝</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L6"><a class="link" href="https://www.jd.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.jd.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">京东</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L7"><a class="link" href="https://weibo.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/weibo.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">微博</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L8"><a class="link" href="https://www.douban.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.douban.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">豆瓣</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L9"><a class="link" href="https://github.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/github.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">GitHub</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L10"><a class="link" href="https://www.csdn.net" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.csdn.net?larger=true" alt="" onerror="favErr(this)"><span class="txt">CSDN</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L11"><a class="link" href="https://stackoverflow.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/stackoverflow.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">Stack Overflow</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li></ul></div></div></section><p class="empty-tip" id="empty">没有匹配的链接</p></main><div class="mask" id="fmask">
+  <div class="modal">
+    <h3 id="fTitle">新建文件夹</h3>
+    <label>文件夹名称</label>
+    <input id="fName" placeholder="例如：硬件资料">
+    <label>保存位置</label>
+    <select id="fLoc"></select>
+    <div class="m-btns">
+      <button id="fCancel">取消</button>
+      <button id="fSave" class="primary">创建</button>
+    </div>
+  </div>
+</div>
+<div class="mask" id="smask">
+  <div class="modal">
+    <h3>新建分区</h3>
+    <label>分区名称</label>
+    <input id="sName" placeholder="例如：学习资料">
+    <div class="m-btns">
+      <button id="sCancel">取消</button>
+      <button id="sSave" class="primary">创建</button>
+    </div>
+  </div>
+</div>
+<div class="mask" id="mask">
+  <div class="modal">
+    <h3 id="mTitle">添加链接</h3>
+    <label class="lbl-row"><span>名称</span><button type="button" id="mFetchTitle" class="fetch-title" title="抓取该网址的网页标题填入名称">获取标题</button></label>
+    <input id="mName" placeholder="显示名称">
+    <label>网址</label>
+    <input id="mUrl" placeholder="https://…">
+    <label id="mLocRow">保存位置（分类卡片）</label>
+    <select id="mLoc"></select>
+    <div class="m-btns">
+      <button id="mCancel">取消</button>
+      <button id="mSave" class="primary">保存</button>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  var FROZEN = document.body.hasAttribute("data-frozen");
+  /* 已落盘页面（💾 保存生成）：DOM 已含全部修改，启动时用全新状态 */
+  var PREBAKED = document.body.hasAttribute("data-baked");
+  var LSKEY = PREBAKED
+    ? (document.body.getAttribute("data-lskey") || "bmEdits_baked_v1")
+    : "bmEdits_" + (document.body.hasAttribute("data-template") ? "tpl_"
+                    : document.body.hasAttribute("data-sample") ? "smp_" : "") + "v1";
+  var state = { del: [], edit: {}, add: {}, folders: {}, delCards: [], moveOps: [], folderOps: [], newSecs: [], subtitle: "" };
+  if (!FROZEN && !PREBAKED) {
+    try {
+      var saved = JSON.parse(localStorage.getItem(LSKEY));
+      if (saved) {
+        state = saved;
+        state.del = state.del || []; state.edit = state.edit || {};
+        state.add = state.add || {}; state.folders = state.folders || {};
+        state.delCards = state.delCards || [];
+        state.moveOps = state.moveOps || []; state.folderOps = state.folderOps || [];
+        state.newSecs = state.newSecs || []; state.subtitle = state.subtitle || "";
+        /* 迁移旧版对象型记录为数组操作序列 */
+        if (saved.moves && !Array.isArray(saved.moves)) {
+          state.moveOps = Object.keys(saved.moves).map(function (id) {
+            return { id: id, cid: saved.moves[id], ref: null, pos: null };
+          });
+        }
+        if (saved.folderMoves && !Array.isArray(saved.folderMoves)) {
+          state.folderOps = Object.keys(saved.folderMoves).map(function (cid) {
+            return { cid: cid, target: saved.folderMoves[cid], pos: null };
+          });
+        }
+        delete state.moves; delete state.folderMoves;
+      }
+    } catch (e) {}
+  }
+  function save() {
+    if (FROZEN) return;
+    try { localStorage.setItem(LSKEY, JSON.stringify(state)); } catch (e) {}
+  }
+
+  /* ---------- 渲染辅助 ---------- */
+  function makeLi(name, href, id, iconUrl) {
+    var li = document.createElement("li");
+    li.setAttribute("data-id", id || ("N" + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36)));
+    li.setAttribute("draggable", "true");
+    var a = document.createElement("a");
+    a.className = "link"; a.href = href; a.target = "_blank"; a.rel = "noopener";
+    a.setAttribute("draggable", "false");
+    if (iconUrl) {
+      var im = document.createElement("img");
+      im.className = "fav"; im.src = iconUrl; im.alt = "";
+      im.onerror = function () { im.remove(); };
+      a.appendChild(im);
+    } else {
+      var fb = document.createElement("span");
+      fb.className = "fav-fb"; fb.setAttribute("aria-hidden", "true");
+      fb.textContent = "🪶";
+      a.appendChild(fb);
+    }
+    var t = document.createElement("span"); t.className = "txt"; t.textContent = name;
+    a.appendChild(t);
+    var ops = document.createElement("span"); ops.className = "ops";
+    ops.innerHTML = '<button class="op edit" title="编辑此链接">\u270e</button>' +
+                    '<button class="op del" title="删除此链接">\u2715</button>';
+    li.appendChild(a); li.appendChild(ops);
+    return li;
+  }
+  function enableDrag(li) {
+    li.setAttribute("draggable", "true");
+    var a = li.querySelector("a.link");
+    if (a) a.setAttribute("draggable", "false");
+  }
+  function cardUl(card) {
+    var ul = card.querySelector(":scope > ul.links");
+    if (!ul) { ul = document.createElement("ul"); ul.className = "links"; card.appendChild(ul); }
+    return ul;
+  }
+  function makeCard(cid, name, path) {
+    var div = document.createElement("div");
+    div.className = "card";
+    div.setAttribute("data-cid", cid);
+    div.setAttribute("data-path", path || name);
+    div.setAttribute("draggable", "true");
+    var h3 = document.createElement("h3");
+    var span = document.createElement("span"); span.textContent = name;
+    var ops = document.createElement("span"); ops.className = "ops card-ops";
+    ops.innerHTML = '<button class="op add" data-add="' + cid + '" title="向此分类添加链接">\uff0b</button>' +
+                    '<button class="op addfolder" data-addfolder="' + cid + '" title="在此文件夹内新建子文件夹">\ud83d\udcc1</button>' +
+                    '<button class="op delcard" data-delcard="' + cid + '" title="删除此文件夹（含全部内容）">\ud83d\uddd1</button>';
+    h3.appendChild(span); h3.appendChild(ops);
+    div.appendChild(h3);
+    return div;
+  }
+  function newCid() {
+    return "F" + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
+  }
+  function newNid() {
+    return "N" + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
+  }
+  function addSectionEl(id, name) {
+    var main = document.querySelector("main");
+    var sec = document.createElement("section");
+    sec.id = id;
+    var h2 = document.createElement("h2");
+    h2.textContent = name;
+    var cols = document.createElement("div");
+    cols.className = "cols";
+    sec.appendChild(h2); sec.appendChild(cols);
+    var tip = document.getElementById("empty");
+    if (tip && tip.parentElement === main) main.insertBefore(sec, tip); else main.appendChild(sec);
+    var nav = document.getElementById("nav");
+    if (nav) {
+      var a = document.createElement("a");
+      a.href = "#" + id;
+      a.textContent = name;
+      nav.appendChild(a);
+    }
+    return sec;
+  }
+
+  /* ---------- 应用已保存的修改 ---------- */
+  if (!FROZEN) {
+    /* 0) 全部链接与卡片启用拖拽 */
+    document.querySelectorAll("li[data-id]").forEach(enableDrag);
+    document.querySelectorAll(".card[data-cid]").forEach(function (c) {
+      c.setAttribute("draggable", "true");
+    });
+    /* 0.5) 重建用户新建的分区 & 应用副标题修改 */
+    state.newSecs.forEach(function (s) { addSectionEl(s.id, s.name); });
+    if (state.subtitle) {
+      var subEl0 = document.getElementById("subtitle");
+      if (subEl0) subEl0.textContent = state.subtitle;
+    }
+    /* 1) 删除被移除的文件夹（连同其全部内容） */
+    state.delCards.forEach(function (cid) {
+      var card = document.querySelector('.card[data-cid="' + cid + '"]');
+      if (card) card.remove();
+    });
+    /* 2) 重建用户新建的文件夹 */
+    Object.keys(state.folders).forEach(function (cid) {
+      var f = state.folders[cid];
+      if (!f) return;
+      var host = null, parentLabel = "";
+      if (f.parent.indexOf("sec:") === 0) {
+        var sec = document.getElementById(f.parent.slice(4));
+        if (sec) { host = sec.querySelector(".cols"); parentLabel = sec.querySelector("h2").textContent; }
+      } else if (f.parent.indexOf("card:") === 0) {
+        var pc = document.querySelector('.card[data-cid="' + f.parent.slice(5) + '"]');
+        if (pc) { host = pc; parentLabel = pc.getAttribute("data-path") || ""; }
+      }
+      if (host) {
+        host.appendChild(makeCard(cid, f.name, parentLabel ? parentLabel + " / " + f.name : f.name));
+      }
+    });
+    /* 3) 按操作顺序重放文件夹的移动 / 排序
+       target: "sec:<id>" 顶层 | "card:<cid>" 成为子文件夹 | "sib:<cid>" 插到参考卡片前/后 */
+    state.folderOps.forEach(function (op) {
+      var fcard = document.querySelector('.card[data-cid="' + op.cid + '"]');
+      if (!fcard) return;
+      if (op.target.indexOf("sec:") === 0) {
+        var sec = document.getElementById(op.target.slice(4));
+        if (!sec) return;
+        var cols = sec.querySelector(".cols");
+        if (!cols) return;
+        if (op.pos === "before" || op.pos === "after") {
+          var refc = op.ref ? cols.querySelector('.card[data-cid="' + op.ref + '"]') : null;
+          if (refc && refc !== fcard) cols.insertBefore(fcard, op.pos === "before" ? refc : refc.nextSibling);
+          else cols.appendChild(fcard);
+        } else if (fcard.parentElement !== cols) cols.appendChild(fcard);
+        refreshPaths(fcard, sec.querySelector("h2") ? sec.querySelector("h2").textContent : "");
+        purgeLinkMoves(fcard);
+      } else if (op.target.indexOf("card:") === 0) {
+        var pc = document.querySelector('.card[data-cid="' + op.target.slice(5) + '"]');
+        if (!pc || pc === fcard || fcard.contains(pc)) return;
+        if (op.pos === "before" || op.pos === "after") {
+          pc.parentElement.insertBefore(fcard, op.pos === "before" ? pc : pc.nextSibling);
+        } else pc.appendChild(fcard);
+        refreshPaths(fcard, pc.getAttribute("data-path") || "");
+        purgeLinkMoves(fcard);
+      } else if (op.target.indexOf("sib:") === 0) {
+        var rc = document.querySelector('.card[data-cid="' + op.target.slice(4) + '"]');
+        if (!rc || rc === fcard || fcard.contains(rc)) return;
+        var oldParent = fcard.parentElement;
+        rc.parentElement.insertBefore(fcard, op.pos === "before" ? rc : rc.nextSibling);
+        if (oldParent !== fcard.parentElement) {
+          refreshPaths(fcard, parentPathOf(rc));
+          purgeLinkMoves(fcard);
+        }
+      }
+    });
+    /* 3) 应用链接的编辑 / 删除 / 新增 */
+    document.querySelectorAll("li[data-id]").forEach(function (li) {
+      var id = li.getAttribute("data-id");
+      if (state.del.indexOf(id) >= 0) { li.remove(); return; }
+      var e = state.edit[id];
+      if (e) {
+        var a = li.querySelector("a.link");
+        a.setAttribute("href", e.href);
+        a.querySelector(".txt").textContent = e.name;
+      }
+    });
+    Object.keys(state.add).forEach(function (cid) {
+      var card = document.querySelector('.card[data-cid="' + cid + '"]');
+      if (!card) return;
+      (state.add[cid] || []).forEach(function (it) {
+        cardUl(card).appendChild(makeLi(it.name, it.href, it.id, it.icon));
+      });
+    });
+    /* 4) 按操作顺序重放链接的移动 / 排序 */
+    state.moveOps.forEach(function (op) {
+      var li = document.querySelector('li[data-id="' + op.id + '"]');
+      if (!li) return;
+      var target = document.querySelector('.card[data-cid="' + op.cid + '"]');
+      if (!target) return;
+      var ul = cardUl(target);
+      if (op.ref) {
+        var refLi = ul.querySelector('li[data-id="' + op.ref + '"]');
+        if (refLi && refLi !== li) {
+          ul.insertBefore(li, op.pos === "before" ? refLi : refLi.nextSibling);
+          return;
+        }
+      }
+      ul.appendChild(li);
+    });
+  }
+
+  /* ---------- 新增链接时自动补全标题与图标（静默降级，不阻塞） ---------- */
+  function hostOf(url) {
+    try { return new URL(url).hostname; } catch (e) { return ""; }
+  }
+  var FAV_SERVICES = [
+    function (d) { return "https://api.iowen.cn/favicon/" + d + ".png"; },
+    function (d) { return "https://favicon.im/" + d + "?larger=true"; },
+    function (d) { return "https://icons.duckduckgo.com/ip3/" + d + ".ico"; }
+  ];
+  function tryLoadImg(urls, ok) {
+    if (!urls.length) return;
+    var img = new Image();
+    img.onload = function () { ok(img.src); };
+    img.onerror = function () { tryLoadImg(urls.slice(1), ok); };
+    img.src = urls[0];
+  }
+  function decodeEntities(s) {
+    var ta = document.createElement("textarea");
+    ta.innerHTML = s;
+    return ta.value;
+  }
+  function autoEnrich(li, item) {
+    var a = li.querySelector("a.link");
+    if (!a) return;
+    var href = a.getAttribute("href");
+    var d = hostOf(href);
+    if (!d) return;
+    /* 1) 图标：依次尝试各 favicon 服务，成功后写入 DOM 与持久化状态 */
+    tryLoadImg(FAV_SERVICES.map(function (f) { return f(d); }), function (src) {
+      var holder = li.querySelector("span.fav-fb") || li.querySelector("img.fav");
+      var img = document.createElement("img");
+      img.className = "fav"; img.src = src; img.alt = "";
+      img.onerror = function () { img.remove(); };
+      if (holder) holder.replaceWith(img); else a.insertBefore(img, a.firstChild);
+      item.icon = src;
+      save();
+    });
+    /* 2) 标题：先直接 fetch（部分站点允许跨域），再经公共代理，失败保留用户输入 */
+    fetchPageTitle(href, function (title) {
+      if (!title) return;
+      li.querySelector(".txt").textContent = title;
+      item.name = title;
+      save();
+    });
+  }
+  function extractTitle(txt) {
+    var low = txt.toLowerCase();
+    var p1 = low.indexOf("<title");
+    var p2 = low.indexOf(">", p1);
+    var p3 = low.indexOf("</title", p2);
+    if (p1 < 0 || p2 < 0 || p3 < 0) return "";
+    return decodeEntities(txt.slice(p2 + 1, p3)).trim();
+  }
+  function decodeHtml(buf) {
+    var u8 = new Uint8Array(buf);
+    var txt = new TextDecoder("utf-8").decode(u8);
+    var head = txt.slice(0, 2048).toLowerCase();
+    var m = head.match(/charset\s*=\s*["']?\s*([a-z0-9\-_]+)/);
+    var isGbk = m && /gb2312|gbk|gb18030/.test(m[1]);
+    if (!isGbk) {
+      var bad = 0;
+      for (var i = 0; i + 2 < u8.length; i += 997) {
+        if (u8[i] === 0xEF && u8[i + 1] === 0xBF && u8[i + 2] === 0xBD) bad++;
+      }
+      isGbk = bad > 3;
+    }
+    if (isGbk) {
+      try { txt = new TextDecoder("gb18030").decode(u8); } catch (e) {}
+    }
+    return txt;
+  }
+  function extractJinaTitle(txt) {
+    var m = txt.match(/^Title:\s*(.+)$/im);
+    return m ? m[1].trim() : "";
+  }
+  function extractMicrolinkTitle(data) {
+    try { return (data && data.data && data.data.title) || ""; } catch (e) { return ""; }
+  }
+  /* 并行竞速：所有来源同时发起，第一个成功者胜出；全部失败保证 cb("") */
+  function fetchPageTitle(href, cb) {
+    var enc = encodeURIComponent(href);
+    var sources = [
+      { url: href, kind: "raw" },
+      { url: "https://api.allorigins.win/raw?url=" + enc, kind: "raw" },
+      { url: "https://api.codetabs.com/v1/proxy?quest=" + enc, kind: "raw" },
+      { url: "https://r.jina.ai/" + href, kind: "jina" },
+      { url: "https://api.microlink.io/?url=" + enc + "&meta=true", kind: "json" }
+    ];
+    var done = false, pending = sources.length;
+    function finish(t) { if (!done && t) { done = true; cb(t); } }
+    function settle() { pending--; if (pending === 0 && !done) { done = true; cb(""); } }
+    sources.forEach(function (s, idx) {
+      var ctrl = new AbortController();
+      var timer = setTimeout(function () { ctrl.abort(); }, 8000);
+      fetch(s.url, { signal: ctrl.signal }).then(function (r) {
+        if (s.kind === "json") return r.json();
+        return r.arrayBuffer();
+      }).then(function (data) {
+        clearTimeout(timer);
+        var title = "";
+        if (s.kind === "json") title = extractMicrolinkTitle(data);
+        else if (s.kind === "jina") title = extractJinaTitle(String(data));
+        else title = extractTitle(decodeHtml(data));
+        finish(title);
+        settle();
+      }).catch(function () {
+        clearTimeout(timer);
+        settle();
+      });
+    });
+  }
+
+  /* ---------- 搜索过滤（支持动态节点） ---------- */
+  var input = document.getElementById("q");
+  var empty = document.getElementById("empty");
+  function applyFilter() {
+    var q = input.value.trim().toLowerCase();
+    if (!q) {
+      /* 无关键词：全部显示（空文件夹也保持可见） */
+      document.querySelectorAll("li,.card,section").forEach(function (el) {
+        el.style.display = "";
+      });
+      empty.style.display = "none";
+      return;
+    }
+    document.querySelectorAll("li").forEach(function (li) {
+      li.style.display = li.textContent.toLowerCase().indexOf(q) >= 0 ? "" : "none";
+    });
+    var visible = 0;
+    document.querySelectorAll("section").forEach(function (sec) {
+      var any = false;
+      sec.querySelectorAll(".card").forEach(function (c) {
+        var has = c.querySelector("li:not([style*='none'])");
+        c.style.display = has ? "" : "none";
+        if (has) any = true;
+      });
+      sec.style.display = any ? "" : "none";
+      if (any) visible++;
+    });
+    empty.style.display = visible ? "none" : "block";
+  }
+  input.addEventListener("input", applyFilter);
+
+  /* ---------- 弹窗 ---------- */
+  var mask = document.getElementById("mask");
+  var mName = document.getElementById("mName"), mUrl = document.getElementById("mUrl");
+  var mLoc = document.getElementById("mLoc"), mLocRow = document.getElementById("mLocRow");
+  var mTitle = document.getElementById("mTitle");
+  var editingId = null, addCid = null;
+  function openModal(title, opts) {
+    mTitle.textContent = title;
+    mName.value = opts.name || ""; mUrl.value = opts.href || "";
+    editingId = opts.id || null; addCid = opts.cid || null;
+    mLocRow.style.display = opts.id ? "none" : "";
+    if (!opts.id) {
+      mLoc.innerHTML = "";
+      document.querySelectorAll(".card[data-cid]").forEach(function (c) {
+        var o = document.createElement("option");
+        o.value = c.getAttribute("data-cid");
+        o.textContent = c.getAttribute("data-path") || "(未命名分类)";
+        mLoc.appendChild(o);
+      });
+      if (opts.cid) mLoc.value = opts.cid;
+    }
+    mask.classList.add("show");
+    setTimeout(function () { mName.focus(); }, 50);
+  }
+  function closeModal() { mask.classList.remove("show"); }
+  document.getElementById("mCancel").addEventListener("click", closeModal);
+  mask.addEventListener("click", function (e) { if (e.target === mask) closeModal(); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") { closeModal(); closeFolderModal(); closeSecModal(); }
+    if (e.key === "Enter") {
+      if (mask.classList.contains("show")) mSaveBtn.click();
+      if (fmask.classList.contains("show")) fSaveBtn.click();
+      if (smask && smask.classList.contains("show")) sSaveBtn.click();
+    }
+  });
+
+  /* ---------- 弹窗内「获取标题」按钮 ---------- */
+  var mFetchBtn = document.getElementById("mFetchTitle");
+  mFetchBtn.addEventListener("click", function () {
+    if (mFetchBtn.disabled) return;
+    var href = mUrl.value.trim();
+    if (!href) { alert("请先输入网址"); return; }
+    if (!/^[a-z][a-z0-9+.\-]*:/i.test(href)) href = "https://" + href;
+    var old = mFetchBtn.textContent;
+    mFetchBtn.disabled = true;
+    mFetchBtn.textContent = "获取中…";
+    fetchPageTitle(href, function (title) {
+      mFetchBtn.disabled = false;
+      if (title) {
+        mFetchBtn.textContent = old;
+        mName.value = title;
+        mName.focus();
+      } else {
+        mFetchBtn.textContent = "获取失败";
+        setTimeout(function () { mFetchBtn.textContent = old; }, 1500);
+      }
+    });
+  });
+
+  var mSaveBtn = document.getElementById("mSave");
+  mSaveBtn.addEventListener("click", function () {
+    var name = mName.value.trim(), href = mUrl.value.trim();
+    if (!name || !href) { alert("名称和网址都不能为空"); return; }
+    if (!/^[a-z][a-z0-9+.\-]*:/i.test(href)) href = "https://" + href;
+    if (editingId) {
+      var li = document.querySelector('li[data-id="' + editingId + '"]');
+      if (li) {
+        var a = li.querySelector("a.link");
+        a.setAttribute("href", href);
+        a.querySelector(".txt").textContent = name;
+        state.edit[editingId] = { name: name, href: href };
+        save();
+      }
+    } else {
+      var cid = addCid || mLoc.value;
+      var card = document.querySelector('.card[data-cid="' + cid + '"]');
+      if (card) {
+        var id = "N" + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
+        var liNew = makeLi(name, href, id);
+        cardUl(card).appendChild(liNew);
+        var item = { id: id, name: name, href: href };
+        (state.add[cid] = state.add[cid] || []).push(item);
+        save();
+        autoEnrich(liNew, item);
+      }
+    }
+    closeModal();
+    applyFilter();
+  });
+
+  /* ---------- 文件夹弹窗 ---------- */
+  var fmask = document.getElementById("fmask");
+  var fName = document.getElementById("fName"), fLoc = document.getElementById("fLoc");
+  var fTarget = null; // 预选的父位置，如 "card:C12"
+  function openFolderModal(parent) {
+    fTarget = parent || null;
+    fName.value = "";
+    fLoc.innerHTML = "";
+    document.querySelectorAll("section[id]").forEach(function (sec) {
+      var o = document.createElement("option");
+      o.value = "sec:" + sec.id;
+      o.textContent = "【分区】" + sec.querySelector("h2").textContent;
+      fLoc.appendChild(o);
+    });
+    document.querySelectorAll(".card[data-cid]").forEach(function (c) {
+      var o = document.createElement("option");
+      o.value = "card:" + c.getAttribute("data-cid");
+      o.textContent = "　└ " + (c.getAttribute("data-path") || "(未命名)");
+      fLoc.appendChild(o);
+    });
+    if (fTarget) fLoc.value = fTarget;
+    fmask.classList.add("show");
+    setTimeout(function () { fName.focus(); }, 50);
+  }
+  function closeFolderModal() { fmask.classList.remove("show"); }
+  document.getElementById("fCancel").addEventListener("click", closeFolderModal);
+  fmask.addEventListener("click", function (e) { if (e.target === fmask) closeFolderModal(); });
+  var fSaveBtn = document.getElementById("fSave");
+  fSaveBtn.addEventListener("click", function () {
+    var name = fName.value.trim();
+    if (!name) { alert("请输入文件夹名称"); return; }
+    var parent = fTarget || fLoc.value;
+    var cid = newCid();
+    var host = null, parentLabel = "";
+    if (parent.indexOf("sec:") === 0) {
+      var sec = document.getElementById(parent.slice(4));
+      if (sec) { host = sec.querySelector(".cols"); parentLabel = sec.querySelector("h2").textContent; }
+    } else {
+      var pc = document.querySelector('.card[data-cid="' + parent.slice(5) + '"]');
+      if (pc) { host = pc; parentLabel = pc.getAttribute("data-path") || ""; }
+    }
+    if (!host) { alert("保存位置不存在"); return; }
+    host.appendChild(makeCard(cid, name, parentLabel ? parentLabel + " / " + name : name));
+    state.folders[cid] = { name: name, parent: parent };
+    save();
+    closeFolderModal();
+    applyFilter();
+  });
+
+  /* ---------- 分区弹窗 ---------- */
+  var smask = document.getElementById("smask");
+  var sName = document.getElementById("sName");
+  function openSecModal() {
+    sName.value = "";
+    smask.classList.add("show");
+    setTimeout(function () { sName.focus(); }, 50);
+  }
+  function closeSecModal() { smask.classList.remove("show"); }
+  document.getElementById("sCancel").addEventListener("click", closeSecModal);
+  smask.addEventListener("click", function (e) { if (e.target === smask) closeSecModal(); });
+  var sSaveBtn = document.getElementById("sSave");
+  sSaveBtn.addEventListener("click", function () {
+    var name = sName.value.trim();
+    if (!name) { alert("请输入分区名称"); return; }
+    var id = "sec-" + Date.now().toString(36) + Math.floor(Math.random() * 1e5).toString(36);
+    addSectionEl(id, name);
+    state.newSecs.push({ id: id, name: name });
+    save();
+    closeSecModal();
+    applyFilter();
+  });
+  document.getElementById("newSecBtn").addEventListener("click", openSecModal);
+
+  /* ---------- 导入浏览器书签 HTML ---------- */
+  function parseBookmarksHtml(text) {
+    var lines = text.split(/\r?\n/);
+    var root = { name: null, children: [], links: [] };
+    var stack = [root], pending = null;
+    var h3Re = /^<DT><H3[^>]*>(.*?)<\/H3>\s*$/i;
+    var aRe = /^<DT><A\s+HREF="([^"]*)"(.*?)(?:>(.*?)<\/A>)?\s*$/i;
+    var iconRe = /ICON="([^"]*)"/i;
+    lines.forEach(function (line0) {
+      var line = line0.replace(/^\s+|\s+$/g, "");
+      if (!line) return;
+      var u = line.toUpperCase();
+      if (u.indexOf("<DL>") === 0) {
+        if (pending) { stack.push(pending); pending = null; }
+        else {
+          var anon = { name: null, children: [], links: [] };
+          stack[stack.length - 1].children.push(anon);
+          stack.push(anon);
+        }
+        return;
+      }
+      if (u.indexOf("</DL") === 0) { if (stack.length > 1) stack.pop(); return; }
+      var m = h3Re.exec(line);
+      if (m) {
+        var node = { name: decodeEntities(m[1]).trim(), children: [], links: [] };
+        stack[stack.length - 1].children.push(node);
+        pending = node;
+        return;
+      }
+      m = aRe.exec(line);
+      if (m) {
+        var im = iconRe.exec(m[2] || "");
+        stack[stack.length - 1].links.push({
+          href: decodeEntities(m[1]),
+          name: decodeEntities(m[3] || "").trim() || decodeEntities(m[1]),
+          icon: im ? decodeEntities(im[1]) : ""
+        });
+      }
+    });
+    return root;
+  }
+  function importNode(node, parentSpec, parentLabel) {
+    var cid = newCid();
+    var host = null;
+    if (parentSpec.indexOf("sec:") === 0) {
+      var sec = document.getElementById(parentSpec.slice(4));
+      host = sec ? sec.querySelector(".cols") : null;
+    } else {
+      host = document.querySelector('.card[data-cid="' + parentSpec.slice(5) + '"]');
+    }
+    if (!host) return null;
+    var name = node.name || "未命名";
+    var label = parentLabel ? parentLabel + " / " + name : name;
+    host.appendChild(makeCard(cid, name, label));
+    state.folders[cid] = { name: name, parent: parentSpec };
+    node.children.forEach(function (c) {
+      if (c.children.length || c.links.length) importNode(c, "card:" + cid, label);
+    });
+    var card = document.querySelector('.card[data-cid="' + cid + '"]');
+    var ul = cardUl(card);
+    node.links.forEach(function (l) {
+      var id = newNid();
+      var icon = (l.icon && l.icon.length < 20000) ? l.icon : "";
+      ul.appendChild(makeLi(l.name, l.href, id, icon));
+      (state.add[cid] = state.add[cid] || []).push({ id: id, name: l.name, href: l.href, icon: icon });
+    });
+    return cid;
+  }
+  function importBookmarks(text, secName) {
+    var root = parseBookmarksHtml(text);
+    var tops = root.children.filter(function (c) { return c.children.length || c.links.length; });
+    var loose = root.links.slice();
+    if (tops.length === 1 && !loose.length) {
+      /* 根下只有一个容器（如「书签栏」）：下钻一层取其子文件夹作为顶层卡片 */
+      loose = tops[0].links.slice();
+      tops = tops[0].children.filter(function (c) { return c.children.length || c.links.length; });
+    }
+    if (!tops.length && !loose.length) throw new Error("未找到任何书签");
+    var secId = "sec-" + Date.now().toString(36) + Math.floor(Math.random() * 1e5).toString(36);
+    addSectionEl(secId, secName);
+    state.newSecs.push({ id: secId, name: secName });
+    tops.forEach(function (t) { importNode(t, "sec:" + secId, secName); });
+    if (loose.length) {
+      importNode({ name: "未分组", children: [], links: loose }, "sec:" + secId, secName);
+    }
+  }
+  document.getElementById("importBtn").addEventListener("click", function () {
+    if (FROZEN) return;
+    document.getElementById("importFile").click();
+  });
+  document.getElementById("importFile").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    this.value = "";
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        importBookmarks(String(reader.result), "导入 · " + f.name.replace(/\.html?$/i, ""));
+        save();
+        applyFilter();
+      } catch (e) {
+        alert("导入失败：" + (e && e.message ? e.message : e));
+      }
+    };
+    reader.readAsText(f, "utf-8");
+  });
+
+  /* ---------- 副标题点击编辑 ---------- */
+  var subEl = document.getElementById("subtitle");
+  if (subEl && !FROZEN) {
+    var origSub = subEl.textContent;
+    subEl.addEventListener("click", function () {
+      if (subEl.isContentEditable) return;
+      subEl.setAttribute("contenteditable", "true");
+      subEl.focus();
+      var r = document.createRange();
+      r.selectNodeContents(subEl);
+      var s = window.getSelection();
+      s.removeAllRanges(); s.addRange(r);
+    });
+    var commitSub = function () {
+      if (!subEl.isContentEditable) return;
+      subEl.removeAttribute("contenteditable");
+      var t = subEl.textContent.trim();
+      if (!t) t = origSub;
+      subEl.textContent = t;
+      state.subtitle = (t === origSub) ? "" : t;
+      save();
+    };
+    subEl.addEventListener("blur", commitSub);
+    subEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); subEl.blur(); }
+      if (e.key === "Escape") {
+        subEl.textContent = state.subtitle || origSub;
+        subEl.blur();
+      }
+    });
+  }
+
+  /* ---------- 事件委托：编辑 / 删除 / 卡片级添加 ---------- */
+  document.addEventListener("click", function (e) {
+    if (FROZEN) return;
+    var b = e.target.closest ? e.target.closest("button.op") : null;
+    if (!b) return;
+    if (b.classList.contains("del")) {
+      var li = b.closest("li");
+      var id = li.getAttribute("data-id");
+      if (confirm("确定删除链接「" + li.querySelector(".txt").textContent + "」？")) {
+        li.remove();
+        if (id.charAt(0) !== "N" && state.del.indexOf(id) < 0) state.del.push(id);
+        Object.keys(state.add).forEach(function (cid) {
+          state.add[cid] = state.add[cid].filter(function (it) { return it.id !== id; });
+          if (!state.add[cid].length) delete state.add[cid];
+        });
+        if (state.edit[id]) delete state.edit[id];
+        save(); applyFilter();
+      }
+    } else if (b.classList.contains("edit")) {
+      var li2 = b.closest("li");
+      var a2 = li2.querySelector("a.link");
+      openModal("编辑链接", {
+        id: li2.getAttribute("data-id"),
+        name: a2.querySelector(".txt").textContent,
+        href: a2.getAttribute("href")
+      });
+    } else if (b.classList.contains("add")) {
+      openModal("添加链接", { cid: b.getAttribute("data-add") });
+    } else if (b.classList.contains("addfolder")) {
+      openFolderModal("card:" + b.getAttribute("data-addfolder"));
+    } else if (b.classList.contains("delcard")) {
+      var card = b.closest(".card");
+      var cid = card.getAttribute("data-cid");
+      var name = card.querySelector("h3 span") ? card.querySelector("h3 span").textContent : "(未命名)";
+      var sub = card.querySelectorAll(".card").length;
+      var msg = "确定删除文件夹「" + name + "」？" + (sub ? "其下 " + sub + " 个子文件夹及全部链接将一并删除。" : "其中全部链接将一并删除。");
+      if (confirm(msg)) {
+        /* 收集该卡片及其子孙的 cid，清理相关记录 */
+        var ids = [cid];
+        card.querySelectorAll(".card[data-cid]").forEach(function (c) {
+          ids.push(c.getAttribute("data-cid"));
+        });
+        card.remove();
+        ids.forEach(function (id) {
+          if (id.charAt(0) === "F") {
+            delete state.folders[id];
+          } else if (state.delCards.indexOf(id) < 0) {
+            state.delCards.push(id);
+          }
+          delete state.add[id];
+        });
+        save(); applyFilter();
+      }
+    }
+  });
+  document.getElementById("addBtn").addEventListener("click", function () {
+    openModal("添加链接", {});
+  });
+  document.getElementById("addFolderBtn").addEventListener("click", function () {
+    openFolderModal(null);
+  });
+
+  /* ---------- 拖拽：移动链接 & 移动文件夹 ---------- */
+  var dragLi = null, dragCard = null;
+  function cardName(card) {
+    var s = card.querySelector(":scope > h3 > span");
+    return s ? s.textContent : "";
+  }
+  function refreshPaths(cardEl, parentPath) {
+    var name = cardName(cardEl);
+    var p = parentPath ? parentPath + " / " + name : (name || parentPath);
+    cardEl.setAttribute("data-path", p);
+    cardEl.querySelectorAll(".card[data-cid]").forEach(function (c) {
+      refreshPaths(c, p);
+    });
+  }
+  function parentPathOf(refEl) {
+    var p = refEl ? refEl.parentElement : null;
+    if (!p) return "";
+    if (p.classList && p.classList.contains("cols")) {
+      var sec0 = p.closest("section[id]");
+      return sec0 ? (sec0.querySelector("h2") ? sec0.querySelector("h2").textContent : "") : "";
+    }
+    var pc0 = p.closest(".card[data-cid]");
+    return pc0 ? (pc0.getAttribute("data-path") || "") : "";
+  }
+  function purgeLinkMoves(cardEl) {
+    var ids = {};
+    cardEl.querySelectorAll("li[data-id]").forEach(function (li) {
+      ids[li.getAttribute("data-id")] = 1;
+    });
+    state.moveOps = state.moveOps.filter(function (op) { return !ids[op.id]; });
+  }
+  function clearHover() {
+    document.querySelectorAll(".drop-hover,.drop-line-top,.drop-line-bottom").forEach(function (el) {
+      el.classList.remove("drop-hover", "drop-line-top", "drop-line-bottom");
+    });
+  }
+  function clearDragState() {
+    if (dragLi) { dragLi.classList.remove("dragging"); dragLi = null; }
+    if (dragCard) { dragCard.classList.remove("dragging-card"); dragCard = null; }
+    clearHover();
+  }
+  document.addEventListener("dragstart", function (e) {
+    if (FROZEN) return;
+    var t = e.target;
+    if (!t || t.nodeType !== 1 || !t.closest) return;
+    var li = t.closest("li[data-id]");
+    if (li) {
+      dragLi = li;
+      li.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      try { e.dataTransfer.setData("text/plain", li.getAttribute("data-id")); } catch (err) {}
+      return;
+    }
+    var card = t.closest(".card[data-cid]");
+    if (card) {
+      dragCard = card;
+      card.classList.add("dragging-card");
+      e.dataTransfer.effectAllowed = "move";
+      try { e.dataTransfer.setData("text/plain", card.getAttribute("data-cid")); } catch (err) {}
+    }
+  });
+  document.addEventListener("dragend", clearDragState);
+  document.addEventListener("dragover", function (e) {
+    if (!dragLi && !dragCard) return;
+    if (!e.target || e.target.nodeType !== 1 || !e.target.closest) return;
+    if (dragLi) {
+      var lcard = e.target.closest(".card[data-cid]");
+      if (!lcard) return;
+      var tl = e.target.closest("li[data-id]");
+      var sameCard = (lcard === dragLi.closest(".card[data-cid]"));
+      if (!tl || tl === dragLi || tl.closest(".card[data-cid]") !== lcard) {
+        if (sameCard) return;                    /* 同卡片空白处：忽略 */
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        clearHover();
+        lcard.classList.add("drop-hover");       /* 整卡高亮 = 移入末尾 */
+        return;
+      }
+      /* 悬停在链接上：按鼠标位置决定插到其上/下方 */
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      clearHover();
+      var r = tl.getBoundingClientRect();
+      tl.classList.add(e.clientY < r.top + r.height / 2 ? "drop-line-top" : "drop-line-bottom");
+      return;
+    }
+    /* 拖的是文件夹 */
+    var fcard = e.target.closest(".card[data-cid]");
+    if (fcard && fcard !== dragCard && !dragCard.contains(fcard)) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+      clearHover();
+      var r2 = fcard.getBoundingClientRect();
+      if (e.clientY < r2.top + r2.height * 0.25) fcard.classList.add("drop-line-top");
+      else if (e.clientY > r2.bottom - r2.height * 0.25) fcard.classList.add("drop-line-bottom");
+      else fcard.classList.add("drop-hover");    /* 中间 = 成为其子文件夹 */
+      return;
+    }
+    var sec = e.target.closest("section[id]");
+    if (sec) {
+      var cols = sec.querySelector(".cols");
+      if (cols && dragCard.parentElement !== cols) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        clearHover();
+        cols.classList.add("drop-hover");
+      }
+    }
+  });
+  document.addEventListener("drop", function (e) {
+    if (!dragLi && !dragCard) return;
+    if (!e.target || e.target.nodeType !== 1 || !e.target.closest) return;
+    e.preventDefault();
+    /* ---- 移动 / 排序链接 ---- */
+    if (dragLi) {
+      var li = dragLi; dragLi = null;
+      li.classList.remove("dragging");
+      var marker = document.querySelector(".drop-line-top,.drop-line-bottom");
+      var lcard = e.target.closest(".card[data-cid]");
+      clearHover();
+      if (!lcard) return;
+      if (marker && marker.tagName === "LI") {
+        var refLi = marker;
+        var card2 = refLi.closest(".card[data-cid]");
+        if (!card2 || refLi === li) return;
+        var pos = marker.classList.contains("drop-line-top") ? "before" : "after";
+        cardUl(card2).insertBefore(li, pos === "before" ? refLi : refLi.nextSibling);
+        state.moveOps.push({ id: li.getAttribute("data-id"), cid: card2.getAttribute("data-cid"),
+                             ref: refLi.getAttribute("data-id"), pos: pos });
+        save(); applyFilter();
+        return;
+      }
+      var srcCard = li.closest(".card[data-cid]");
+      if (!srcCard || srcCard === lcard) return;
+      cardUl(lcard).appendChild(li);
+      state.moveOps.push({ id: li.getAttribute("data-id"), cid: lcard.getAttribute("data-cid"),
+                           ref: null, pos: null });
+      save(); applyFilter();
+      return;
+    }
+    /* ---- 移动 / 排序文件夹 ---- */
+    var fcard = dragCard; dragCard = null;
+    fcard.classList.remove("dragging-card");
+    var fmarker = document.querySelector(".card.drop-line-top,.card.drop-line-bottom");
+    var hovered = document.querySelector(".drop-hover");
+    clearHover();
+    var cid = fcard.getAttribute("data-cid");
+    /* 上/下边缘：插到参考卡片前/后（同父排序或跨父移动） */
+    if (fmarker && fmarker !== fcard && !fcard.contains(fmarker)) {
+      var rc = fmarker;
+      var posf = fmarker.classList.contains("drop-line-top") ? "before" : "after";
+      var oldParent = fcard.parentElement;
+      rc.parentElement.insertBefore(fcard, posf === "before" ? rc : rc.nextSibling);
+      if (oldParent !== fcard.parentElement) {
+        refreshPaths(fcard, parentPathOf(rc));
+        purgeLinkMoves(fcard);
+      }
+      state.folderOps.push({ cid: cid, target: "sib:" + rc.getAttribute("data-cid"), pos: posf });
+      save(); applyFilter();
+      return;
+    }
+    /* 中间区域：成为其子文件夹 */
+    var tcard = e.target.closest(".card[data-cid]");
+    if (tcard && hovered === tcard && tcard !== fcard && !fcard.contains(tcard)) {
+      tcard.appendChild(fcard);
+      refreshPaths(fcard, tcard.getAttribute("data-path") || "");
+      purgeLinkMoves(fcard);
+      state.folderOps.push({ cid: cid, target: "card:" + tcard.getAttribute("data-cid"), pos: null });
+      save(); applyFilter();
+      return;
+    }
+    var sec = e.target.closest("section[id]");
+    if (sec && hovered && hovered.classList.contains("cols")) {
+      var cols = sec.querySelector(".cols");
+      if (cols && fcard.parentElement !== cols) {
+        cols.appendChild(fcard);
+        refreshPaths(fcard, sec.querySelector("h2").textContent);
+        purgeLinkMoves(fcard);
+        state.folderOps.push({ cid: cid, target: "sec:" + sec.id, pos: null });
+        save(); applyFilter();
+      }
+    }
+  });
+
+  /* ---------- 外部拖入：从浏览器地址栏 / 书签栏拖网址到页面自动添加 ---------- */
+  document.addEventListener("dragover", function (e) {
+    if (FROZEN || dragLi || dragCard) return;
+    if (!e.dataTransfer || !e.dataTransfer.types) return;
+    var types = Array.prototype.slice.call(e.dataTransfer.types);
+    var ext = types.indexOf("text/uri-list") >= 0 || types.indexOf("text/html") >= 0 ||
+              (types.indexOf("text/plain") >= 0 && types.indexOf("text/uri-list") < 0);
+    if (!ext) return;
+    if (!e.target || e.target.nodeType !== 1 || !e.target.closest) return;
+    var card = e.target.closest(".card[data-cid]");
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+    clearHover();
+    if (card) card.classList.add("drop-hover");
+  });
+  document.addEventListener("drop", function (e) {
+    if (FROZEN || dragLi || dragCard) return;
+    if (!e.target || e.target.nodeType !== 1 || !e.target.closest) return;
+    e.preventDefault();
+    clearHover();
+    var dt = e.dataTransfer;
+    if (!dt) return;
+    /* 解析拖拽数据：uri-list > text/html 锚点 > text/plain */
+    var url = "", name = "";
+    try {
+      var ulist = dt.getData("text/uri-list").trim();
+      if (ulist) {
+        ulist.split(/\r?\n/).forEach(function (ln) {
+          var t = ln.trim();
+          if (!url && t && t.charAt(0) !== "#") url = t;
+        });
+      }
+    } catch (err) {}
+    try {
+      var frag = dt.getData("text/html");
+      if (frag) {
+        var mh = /<a[^>]*href\s*=\s*"([^"]*)"[^>]*>([\s\S]*?)<\/a>/i.exec(frag);
+        if (mh) {
+          if (!url) url = decodeEntities(mh[1]).trim();
+          name = decodeEntities(mh[2].replace(/<[^>]*>/g, "")).replace(/\s+/g, " ").trim();
+        }
+      }
+    } catch (err) {}
+    if (!url) {
+      try {
+        var plain = dt.getData("text/plain").trim();
+        if (plain) url = plain.split(/\r?\n/)[0].trim();
+      } catch (err) {}
+    }
+    if (!url) return;
+    if (!/^[a-z][a-z0-9+.\-]*:/i.test(url)) url = "https://" + url;
+    var ok = /^https?:\/\//i.test(url);
+    if (!ok) return;
+    if (!name) name = hostOf(url) || url;
+    var tcard = e.target.closest(".card[data-cid]");
+    if (tcard) {
+      /* 落在文件夹卡片上：直接添加并自动补全图标 / 标题 */
+      var cid = tcard.getAttribute("data-cid");
+      var id = newNid();
+      var li = makeLi(name, url, id);
+      cardUl(tcard).appendChild(li);
+      var item = { id: id, name: name, href: url };
+      (state.add[cid] = state.add[cid] || []).push(item);
+      save();
+      autoEnrich(li, item);
+      applyFilter();
+    } else {
+      /* 落在空白处：打开添加对话框，预填名称与网址 */
+      openModal("添加链接", { name: name, href: url });
+    }
+  });
+
+  /* ---------- 💾 保存：把当前 DOM 落盘为可继续编辑的 HTML ---------- */
+  function bakeHTML() {
+    var clone = document.documentElement.cloneNode(true);
+    clone.querySelectorAll("li[style],.card[style],section[style]").forEach(function (el) {
+      el.removeAttribute("style");
+    });
+    clone.querySelectorAll(".dragging,.dragging-card,.drop-hover,.drop-line-top,.drop-line-bottom").forEach(function (el) {
+      el.classList.remove("dragging", "dragging-card", "drop-hover", "drop-line-top", "drop-line-bottom");
+    });
+    var q = clone.querySelector("#q"); if (q) q.value = "";
+    var body = clone.querySelector("body");
+    body.setAttribute("data-baked", "1");
+    body.setAttribute("data-lskey", "bmEdits_baked_" + Date.now().toString(36) +
+                      Math.floor(Math.random() * 1e8).toString(36) + "_v1");
+    return "<!DOCTYPE html>\n" + clone.outerHTML;
+  }
+  function resetStateAfterSave() {
+    try { localStorage.removeItem(LSKEY); } catch (e) {}
+    state = { del: [], edit: {}, add: {}, folders: {}, delCards: [], moveOps: [], folderOps: [], newSecs: [], subtitle: "" };
+  }
+  function downloadBaked(html) {
+    var blob = new Blob([html], { type: "text/html;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = saveAsName();
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  /* 另存文件名：原文件名 + 保存时刻时间戳，保证每次都是新文件 */
+  function saveAsName() {
+    var base = (location.pathname.split("/").pop() || "bookmarks.html").replace(/\.html?$/i, "");
+    var d = new Date();
+    function p2(n) { return (n < 10 ? "0" : "") + n; }
+    var ts = d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + "_" + p2(d.getHours()) + p2(d.getMinutes());
+    return base + "_" + ts + ".html";
+  }
+  var saving = false;
+  document.getElementById("saveBtn").addEventListener("click", function () {
+    if (saving) return;
+    saving = true;
+    var html = bakeHTML();
+    var done = function () { saving = false; resetStateAfterSave(); };
+    /* 每次保存都执行「另存为新文件」，不覆写原文件 */
+    if (window.showSaveFilePicker) {
+      showSaveFilePicker({
+        suggestedName: saveAsName(),
+        types: [{ description: "网页文件", accept: { "text/html": [".html"] } }]
+      }).then(function (handle) {
+        return handle.createWritable().then(function (w) {
+          return w.write(html).then(function () { return w.close(); });
+        });
+      }).then(done).catch(function (e) {
+        if (e && e.name === "AbortError") { saving = false; return; }
+        downloadBaked(html); done();
+      });
+    } else {
+      /* 兜底：浏览器下载 */
+      downloadBaked(html); done();
+    }
+  });
+
+  /* ---------- 导出 & 重置 ---------- */
+  document.getElementById("exportBtn").addEventListener("click", function () {
+    var clone = document.documentElement.cloneNode(true);
+    clone.querySelectorAll(".ops").forEach(function (el) { el.remove(); });
+    var bar = clone.querySelector(".bar-ops"); if (bar) bar.remove();
+    var m = clone.querySelector("#mask"); if (m) m.remove();
+    var fm = clone.querySelector("#fmask"); if (fm) fm.remove();
+    var sm = clone.querySelector("#smask"); if (sm) sm.remove();
+    var inf = clone.querySelector("#importFile"); if (inf) inf.remove();
+    clone.querySelector("body").setAttribute("data-frozen", "1");
+    var out = "<!DOCTYPE html>\n" + clone.outerHTML;
+    var blob = new Blob([out], { type: "text/html;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "bookmarks_multicol_edited.html";
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+  document.getElementById("resetBtn").addEventListener("click", function () {
+    if (confirm("重置将清除本页所有增删改记录（恢复到生成时的状态），继续？")) {
+      try { localStorage.removeItem(LSKEY); } catch (e) {}
+      location.reload();
+    }
+  });
+})();
+</script>
+</body>
+</html>
