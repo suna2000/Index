@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
+<html lang="zh-CN"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>书签导航（示例模板）</title>
@@ -31,9 +30,6 @@
   section { margin:0 0 34px; content-visibility:auto; contain-intrinsic-size:auto 1200px; }
   section > h2 { font-size:17px; margin:0 0 12px; color:var(--brand-dark);
                  border-left:4px solid var(--brand); padding-left:10px; }
-  body:not([data-frozen]) section > h2:hover { text-decoration:underline dotted; cursor:text; }
-  section > h2[contenteditable="true"] { outline:2px solid var(--brand); outline-offset:3px;
-    border-radius:4px; background:rgba(59,111,181,.06); cursor:text; }
   .cols { column-width:235px; column-gap:20px; }
   .card { break-inside:avoid; background:#fff; border:1px solid #e3e6ea;
           border-radius:10px; padding:10px 12px; margin:0 0 20px;
@@ -112,7 +108,7 @@
 </style>
 <script>function favErr(el){var s=document.createElement("span");s.className="fav-fb";s.textContent="🪶";el.replaceWith(s);}</script>
 </head>
-<body data-sample="1">
+<body data-sample="1" data-baked="1" data-lskey="bmEdits_baked_mujnx5kzrvb17_v1">
 <header>
   <h1>📚 书签导航</h1>
   <p id="subtitle" title="点击编辑副标题">示例模板：1 个文件夹 · 10 个网站 · 功能与正式版完全一致，可直接修改</p>
@@ -120,18 +116,18 @@
 <div class="bar">
   <input id="q" type="search" placeholder="🔍 输入关键词过滤链接…" autocomplete="off">
   <nav id="nav">
-<a href="#sec-0">我的书签</a></nav>
+<a href="#sec-0">我的书签</a><a href="#sec-mujnuy6516w6">工作书签</a></nav>
 <span class="bar-ops"><button id="saveBtn" title="把当前修改写回 HTML 文件本身（可反复保存）">💾 保存</button><button id="addBtn" title="添加一个新链接">➕ 添加</button><button id="addFolderBtn" title="新建一个文件夹（分类卡片）">📁 新文件夹</button><button id="newSecBtn" title="添加一个新分区">📑 新分区</button><button id="importBtn" title="导入浏览器导出的书签 HTML 文件（生成为一个新分区）">📥 导入</button><button id="exportBtn" title="导出一个只读副本（冻结当前状态）">⬇ 导出</button><button id="resetBtn" title="清除所有增删改记录">↺ 重置</button></span>
-<input type="file" id="importFile" accept=".html,.htm,text/html" hidden>
+<input type="file" id="importFile" accept=".html,.htm,text/html" hidden="">
 </div>
 <main>
-<section id="sec-0"><h2>我的书签</h2><div class="cols"><div class="card" data-cid="C1" data-path="我的书签 / 常用网站"><h3><span>常用网站</span><span class="ops card-ops"><button class="op add" data-add="C1" title="向此分类添加链接">＋</button><button class="op addfolder" data-addfolder="C1" title="在此文件夹内新建子文件夹">📁</button><button class="op delcard" data-delcard="C1" title="删除此文件夹（含全部内容）">🗑</button></span></h3><ul class="links"><li data-id="L2"><a class="link" href="https://www.baidu.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.baidu.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">百度</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L3"><a class="link" href="https://www.zhihu.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.zhihu.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">知乎</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L4"><a class="link" href="https://www.bilibili.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.bilibili.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">哔哩哔哩</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L5"><a class="link" href="https://www.taobao.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.taobao.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">淘宝</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L6"><a class="link" href="https://www.jd.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.jd.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">京东</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L7"><a class="link" href="https://weibo.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/weibo.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">微博</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L8"><a class="link" href="https://www.douban.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.douban.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">豆瓣</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L9"><a class="link" href="https://github.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/github.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">GitHub</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L10"><a class="link" href="https://www.csdn.net" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/www.csdn.net?larger=true" alt="" onerror="favErr(this)"><span class="txt">CSDN</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L11"><a class="link" href="https://stackoverflow.com" target="_blank" rel="noopener"><img class="fav" src="https://favicon.im/stackoverflow.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">Stack Overflow</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li></ul></div></div></section><p class="empty-tip" id="empty">没有匹配的链接</p></main><div class="mask" id="fmask">
+<section id="sec-0"><h2>我的书签</h2><div class="cols"><div class="card" data-cid="C1" data-path="我的书签 / 常用网站" draggable="true"><h3><span>常用网站</span><span class="ops card-ops"><button class="op add" data-add="C1" title="向此分类添加链接">＋</button><button class="op addfolder" data-addfolder="C1" title="在此文件夹内新建子文件夹">📁</button><button class="op delcard" data-delcard="C1" title="删除此文件夹（含全部内容）">🗑</button></span></h3><ul class="links"><li data-id="L2" draggable="true"><a class="link" href="https://www.baidu.com" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/www.baidu.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">百度</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L3" draggable="true"><a class="link" href="https://www.zhihu.com" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/www.zhihu.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">知乎</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L4" draggable="true"><a class="link" href="https://www.bilibili.com" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/www.bilibili.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">哔哩哔哩</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L5" draggable="true" class=""><a class="link" href="https://www.taobao.com" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/www.taobao.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">淘宝</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L7" draggable="true" class=""><a class="link" href="https://weibo.com" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/weibo.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">微博</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L8" draggable="true" class=""><a class="link" href="https://www.douban.com" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/www.douban.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">豆瓣</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L9" draggable="true" class=""><a class="link" href="https://github.com" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/github.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">GitHub</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L11" draggable="true"><a class="link" href="https://stackoverflow.com" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/stackoverflow.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">Stack Overflow</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li></ul></div><div class="card" data-cid="Fmujns4fjk657" data-path="我的书签 / 123" draggable="true"><h3><span>123</span><span class="ops card-ops"><button class="op add" data-add="Fmujns4fjk657" title="向此分类添加链接">＋</button><button class="op addfolder" data-addfolder="Fmujns4fjk657" title="在此文件夹内新建子文件夹">📁</button><button class="op delcard" data-delcard="Fmujns4fjk657" title="删除此文件夹（含全部内容）">🗑</button></span></h3><ul class="links"><li data-id="L10" draggable="true" class=""><a class="link" href="https://www.csdn.net" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/www.csdn.net?larger=true" alt="" onerror="favErr(this)"><span class="txt">CSDN</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="L6" draggable="true" class=""><a class="link" href="https://www.jd.com" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/www.jd.com?larger=true" alt="" onerror="favErr(this)"><span class="txt">京东</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="Nmujns8pg5ow3" draggable="true"><a class="link" href="https://cloud.siliconflow.cn/me/models" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/cloud.siliconflow.cn?larger=true" alt=""><span class="txt">硅基流动</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li><li data-id="Nmujnsc33949i" draggable="true"><a class="link" href="https://ihaier.feishu.cn/wiki/T1yXwTYGLi4RFbkGgZ1cw2MlnIg" target="_blank" rel="noopener" draggable="false"><img class="fav" src="https://favicon.im/ihaier.feishu.cn?larger=true" alt=""><span class="txt">ihaier.feishu.cn</span></a><span class="ops"><button class="op edit" title="编辑此链接">✎</button><button class="op del" title="删除此链接">✕</button></span></li></ul></div></div></section><section id="sec-mujnuy6516w6"><h2>工作书签</h2><div class="cols"><div class="card" data-cid="Fmujnv92t3e6" data-path="工作书签 / 硬件开发" draggable="true"><h3><span>硬件开发</span><span class="ops card-ops"><button class="op add" data-add="Fmujnv92t3e6" title="向此分类添加链接">＋</button><button class="op addfolder" data-addfolder="Fmujnv92t3e6" title="在此文件夹内新建子文件夹">📁</button><button class="op delcard" data-delcard="Fmujnv92t3e6" title="删除此文件夹（含全部内容）">🗑</button></span></h3></div><div class="card" data-cid="Fmujnw236fa94" data-path="工作书签 / 内网专用" draggable="true"><h3><span>内网专用</span><span class="ops card-ops"><button class="op add" data-add="Fmujnw236fa94" title="向此分类添加链接">＋</button><button class="op addfolder" data-addfolder="Fmujnw236fa94" title="在此文件夹内新建子文件夹">📁</button><button class="op delcard" data-delcard="Fmujnw236fa94" title="删除此文件夹（含全部内容）">🗑</button></span></h3></div></div></section><p class="empty-tip" id="empty" style="display: none;">没有匹配的链接</p></main><div class="mask" id="fmask">
   <div class="modal">
     <h3 id="fTitle">新建文件夹</h3>
     <label>文件夹名称</label>
     <input id="fName" placeholder="例如：硬件资料">
-    <label id="fLocLabel">保存位置</label>
-    <select id="fLoc"></select>
+    <label>保存位置</label>
+    <select id="fLoc"><option value="sec:sec-0">【分区】我的书签</option><option value="sec:sec-mujnuy6516w6">【分区】工作书签</option><option value="card:C1">　└ 我的书签 / 常用网站</option><option value="card:Fmujns4fjk657">　└ 我的书签 / 123</option><option value="card:Fmujnv92t3e6">　└ 工作书签 / 硬件开发</option><option value="card:Fmujnw236fa94">　└ 工作书签 / 内网专用</option></select>
     <div class="m-btns">
       <button id="fCancel">取消</button>
       <button id="fSave" class="primary">创建</button>
@@ -156,8 +152,8 @@
     <input id="mName" placeholder="显示名称">
     <label>网址</label>
     <input id="mUrl" placeholder="https://…">
-    <label id="mLocRow">保存位置（分类卡片）</label>
-    <select id="mLoc"></select>
+    <label id="mLocRow" style="">保存位置（分类卡片）</label>
+    <select id="mLoc"><option value="C1">我的书签 / 常用网站</option><option value="Fmujns4fjk657">我的书签 / 123</option><option value="Fmujnv92t3e6">工作书签 / 硬件开发</option><option value="Fmujnw236fa94">工作书签 / 内网专用</option></select>
     <div class="m-btns">
       <button id="mCancel">取消</button>
       <button id="mSave" class="primary">保存</button>
@@ -173,7 +169,7 @@
     ? (document.body.getAttribute("data-lskey") || "bmEdits_baked_v1")
     : "bmEdits_" + (document.body.hasAttribute("data-template") ? "tpl_"
                     : document.body.hasAttribute("data-sample") ? "smp_" : "") + "v1";
-  var state = { del: [], edit: {}, add: {}, folders: {}, renames: {}, secRenames: {}, delCards: [], moveOps: [], folderOps: [], newSecs: [], subtitle: "" };
+  var state = { del: [], edit: {}, add: {}, folders: {}, delCards: [], moveOps: [], folderOps: [], newSecs: [], subtitle: "" };
   if (!FROZEN && !PREBAKED) {
     try {
       var saved = JSON.parse(localStorage.getItem(LSKEY));
@@ -184,8 +180,6 @@
         state.delCards = state.delCards || [];
         state.moveOps = state.moveOps || []; state.folderOps = state.folderOps || [];
         state.newSecs = state.newSecs || []; state.subtitle = state.subtitle || "";
-        state.renames = state.renames || {};
-        state.secRenames = state.secRenames || {};
         /* 迁移旧版对象型记录为数组操作序列 */
         if (saved.moves && !Array.isArray(saved.moves)) {
           state.moveOps = Object.keys(saved.moves).map(function (id) {
@@ -254,7 +248,6 @@
     var ops = document.createElement("span"); ops.className = "ops card-ops";
     ops.innerHTML = '<button class="op add" data-add="' + cid + '" title="向此分类添加链接">\uff0b</button>' +
                     '<button class="op addfolder" data-addfolder="' + cid + '" title="在此文件夹内新建子文件夹">\ud83d\udcc1</button>' +
-                    '<button class="op renfolder" data-renfolder="' + cid + '" title="重命名此文件夹">\u270e</button>' +
                     '<button class="op delcard" data-delcard="' + cid + '" title="删除此文件夹（含全部内容）">\ud83d\uddd1</button>';
     h3.appendChild(span); h3.appendChild(ops);
     div.appendChild(h3);
@@ -266,15 +259,12 @@
   function newNid() {
     return "N" + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
   }
-  var secOrig = {}; /* 分区原始名称基线（改名回退/清除记录用） */
   function addSectionEl(id, name) {
     var main = document.querySelector("main");
     var sec = document.createElement("section");
     sec.id = id;
     var h2 = document.createElement("h2");
     h2.textContent = name;
-    h2.title = "点击重命名分区";
-    secOrig[id] = name;
     var cols = document.createElement("div");
     cols.className = "cols";
     sec.appendChild(h2); sec.appendChild(cols);
@@ -297,40 +287,12 @@
     document.querySelectorAll(".card[data-cid]").forEach(function (c) {
       c.setAttribute("draggable", "true");
     });
-    /* 0.1) 给静态卡片补上「重命名」按钮（动态创建的卡片由 makeCard 自带，已存在则跳过） */
-    document.querySelectorAll(".card[data-cid] > h3 > .card-ops").forEach(function (ops) {
-      if (ops.querySelector(".renfolder")) return;
-      var b = document.createElement("button");
-      b.className = "op renfolder";
-      b.title = "重命名此文件夹";
-      b.textContent = "\u270e";
-      b.setAttribute("data-renfolder", ops.closest(".card").getAttribute("data-cid"));
-      var del = ops.querySelector(".delcard");
-      if (del) ops.insertBefore(b, del); else ops.appendChild(b);
-    });
-    /* 0.2) 静态分区：记录原始名称基线 + 悬停提示 */
-    document.querySelectorAll("section[id]").forEach(function (sec) {
-      var h2 = sec.querySelector(":scope > h2");
-      if (h2) { secOrig[sec.id] = h2.textContent; h2.title = "点击重命名分区"; }
-    });
     /* 0.5) 重建用户新建的分区 & 应用副标题修改 */
     state.newSecs.forEach(function (s) { addSectionEl(s.id, s.name); });
     if (state.subtitle) {
       var subEl0 = document.getElementById("subtitle");
       if (subEl0) subEl0.textContent = state.subtitle;
     }
-    /* 0.6) 应用分区重命名（同步导航文字与顶层卡片的路径前缀） */
-    Object.keys(state.secRenames).forEach(function (secId) {
-      var sec = document.getElementById(secId);
-      if (!sec) return;
-      var h2 = sec.querySelector(":scope > h2");
-      if (h2) h2.textContent = state.secRenames[secId];
-      var navA = document.querySelector('#nav a[href="#' + secId + '"]');
-      if (navA) navA.textContent = state.secRenames[secId];
-      sec.querySelectorAll(".cols > .card[data-cid]").forEach(function (c) {
-        refreshPaths(c, parentPathOf(c));
-      });
-    });
     /* 1) 删除被移除的文件夹（连同其全部内容） */
     state.delCards.forEach(function (cid) {
       var card = document.querySelector('.card[data-cid="' + cid + '"]');
@@ -351,14 +313,6 @@
       if (host) {
         host.appendChild(makeCard(cid, f.name, parentLabel ? parentLabel + " / " + f.name : f.name));
       }
-    });
-    /* 2.5) 应用文件夹重命名（级联刷新自身及子文件夹的 data-path） */
-    Object.keys(state.renames).forEach(function (cid) {
-      var card = document.querySelector('.card[data-cid="' + cid + '"]');
-      if (!card) return;
-      var span = card.querySelector(":scope > h3 > span");
-      if (span) span.textContent = state.renames[cid];
-      refreshPaths(card, parentPathOf(card));
     });
     /* 3) 按操作顺序重放文件夹的移动 / 排序
        target: "sec:<id>" 顶层 | "card:<cid>" 成为子文件夹 | "sib:<cid>" 插到参考卡片前/后 */
@@ -669,22 +623,11 @@
     applyFilter();
   });
 
-  /* ---------- 文件夹弹窗（新建 / 重命名复用） ---------- */
+  /* ---------- 文件夹弹窗 ---------- */
   var fmask = document.getElementById("fmask");
   var fName = document.getElementById("fName"), fLoc = document.getElementById("fLoc");
   var fTarget = null; // 预选的父位置，如 "card:C12"
-  var fMode = "create", fRenameCid = null; // rename 模式下 fRenameCid 为待重命名文件夹的 cid
-  function setFolderModalMode(mode) {
-    fMode = mode;
-    var rename = mode === "rename";
-    document.getElementById("fTitle").textContent = rename ? "重命名文件夹" : "新建文件夹";
-    document.getElementById("fSave").textContent = rename ? "保存" : "创建";
-    document.getElementById("fLocLabel").style.display = rename ? "none" : "";
-    fLoc.style.display = rename ? "none" : "";
-  }
   function openFolderModal(parent) {
-    setFolderModalMode("create");
-    fRenameCid = null;
     fTarget = parent || null;
     fName.value = "";
     fLoc.innerHTML = "";
@@ -705,39 +648,12 @@
     setTimeout(function () { fName.focus(); }, 50);
   }
   function closeFolderModal() { fmask.classList.remove("show"); }
-  /* 重命名文件夹：复用弹窗（隐藏位置选择），仅修改名称 */
-  function openFolderModalRename(cid) {
-    var card = document.querySelector('.card[data-cid="' + cid + '"]');
-    if (!card) return;
-    setFolderModalMode("rename");
-    fRenameCid = cid;
-    fTarget = null;
-    fName.value = cardName(card);
-    fmask.classList.add("show");
-    setTimeout(function () { fName.focus(); if (fName.select) fName.select(); }, 50);
-  }
-  function applyFolderRename(cid, newName) {
-    var card = document.querySelector('.card[data-cid="' + cid + '"]');
-    if (!card) return;
-    var span = card.querySelector(":scope > h3 > span");
-    if (span) span.textContent = newName;
-    state.renames[cid] = newName;
-    if (state.folders[cid]) state.folders[cid].name = newName; /* 用户新建的文件夹同步持久化名 */
-    refreshPaths(card, parentPathOf(card)); /* 级联刷新自身及子孙文件夹的 data-path */
-    save();
-  }
   document.getElementById("fCancel").addEventListener("click", closeFolderModal);
   fmask.addEventListener("click", function (e) { if (e.target === fmask) closeFolderModal(); });
   var fSaveBtn = document.getElementById("fSave");
   fSaveBtn.addEventListener("click", function () {
     var name = fName.value.trim();
     if (!name) { alert("请输入文件夹名称"); return; }
-    if (fMode === "rename") {
-      applyFolderRename(fRenameCid, name);
-      closeFolderModal();
-      applyFilter();
-      return;
-    }
     var parent = fTarget || fLoc.value;
     var cid = newCid();
     var host = null, parentLabel = "";
@@ -919,70 +835,6 @@
     });
   }
 
-  /* ---------- 分区标题点击重命名（交互与副标题一致） ---------- */
-  function commitSecEdit(h2) {
-    if (!h2.isContentEditable) return;
-    h2.removeAttribute("contenteditable");
-    var sec = h2.closest("section[id]");
-    if (!sec) return;
-    var cur = h2.getAttribute("data-prev") || h2.textContent; /* 进入编辑时的名称 */
-    h2.removeAttribute("data-prev");
-    var t = h2.textContent.trim();
-    if (!t) t = cur; /* 清空视为取消 */
-    if (t === cur) { h2.textContent = cur; return; } /* 未变化 */
-    applySectionRename(sec, t);
-  }
-  function applySectionRename(sec, newName) {
-    var id = sec.id;
-    var h2 = sec.querySelector(":scope > h2");
-    if (h2) h2.textContent = newName;
-    var navA = document.querySelector('#nav a[href="#' + id + '"]');
-    if (navA) navA.textContent = newName;
-    if (secOrig[id] === newName) delete state.secRenames[id]; /* 改回原名则清除记录 */
-    else state.secRenames[id] = newName;
-    state.newSecs.forEach(function (s) { if (s.id === id) s.name = newName; });
-    sec.querySelectorAll(".cols > .card[data-cid]").forEach(function (c) {
-      refreshPaths(c, parentPathOf(c)); /* 顶层卡片路径前缀（分区名）级联刷新 */
-    });
-    save();
-    applyFilter();
-  }
-  if (!FROZEN) {
-    document.addEventListener("click", function (e) {
-      var t = e.target;
-      if (!t || t.nodeType !== 1 || !t.closest) return;
-      var h2 = t.closest("section[id] > h2");
-      if (!h2 || h2.isContentEditable) return;
-      var sec = h2.closest("section[id]");
-      if (!(sec.id in secOrig)) secOrig[sec.id] = h2.textContent;
-      h2.setAttribute("data-prev", h2.textContent);
-      h2.setAttribute("contenteditable", "true");
-      h2.focus();
-      var r = document.createRange();
-      r.selectNodeContents(h2);
-      var s = window.getSelection();
-      s.removeAllRanges(); s.addRange(r);
-    });
-    /* blur 不冒泡，用可冒泡的 focusout 在 document 上统一委托 */
-    document.addEventListener("focusout", function (e) {
-      var h2 = e.target;
-      if (h2 && h2.nodeType === 1 && h2.matches && h2.matches("section[id] > h2")) {
-        commitSecEdit(h2);
-      }
-    });
-    document.addEventListener("keydown", function (e) {
-      var h2 = e.target;
-      if (!h2 || h2.nodeType !== 1 || !h2.matches || !h2.matches("section[id] > h2")) return;
-      if (!h2.isContentEditable) return;
-      if (e.key === "Enter") { e.preventDefault(); h2.blur(); }
-      else if (e.key === "Escape") {
-        var prev = h2.getAttribute("data-prev");
-        if (prev !== null) h2.textContent = prev;
-        h2.blur();
-      }
-    });
-  }
-
   /* ---------- 事件委托：编辑 / 删除 / 卡片级添加 ---------- */
   document.addEventListener("click", function (e) {
     if (FROZEN) return;
@@ -1013,8 +865,6 @@
       openModal("添加链接", { cid: b.getAttribute("data-add") });
     } else if (b.classList.contains("addfolder")) {
       openFolderModal("card:" + b.getAttribute("data-addfolder"));
-    } else if (b.classList.contains("renfolder")) {
-      openFolderModalRename(b.getAttribute("data-renfolder"));
     } else if (b.classList.contains("delcard")) {
       var card = b.closest(".card");
       var cid = card.getAttribute("data-cid");
@@ -1035,7 +885,6 @@
             state.delCards.push(id);
           }
           delete state.add[id];
-          delete state.renames[id];
         });
         save(); applyFilter();
       }
@@ -1327,13 +1176,7 @@
   }
   function resetStateAfterSave() {
     try { localStorage.removeItem(LSKEY); } catch (e) {}
-    state = { del: [], edit: {}, add: {}, folders: {}, renames: {}, secRenames: {}, delCards: [], moveOps: [], folderOps: [], newSecs: [], subtitle: "" };
-    /* 落盘后 DOM 即真相：以当前 DOM 重建分区原始名基线 */
-    Object.keys(secOrig).forEach(function (k) { delete secOrig[k]; });
-    document.querySelectorAll("section[id]").forEach(function (sec) {
-      var h2 = sec.querySelector(":scope > h2");
-      if (h2) secOrig[sec.id] = h2.textContent;
-    });
+    state = { del: [], edit: {}, add: {}, folders: {}, delCards: [], moveOps: [], folderOps: [], newSecs: [], subtitle: "" };
   }
   function downloadBaked(html) {
     var blob = new Blob([html], { type: "text/html;charset=utf-8" });
@@ -1400,5 +1243,5 @@
   });
 })();
 </script>
-</body>
-</html>
+
+</body></html>
